@@ -5,7 +5,7 @@
 ## Responsibilities
 - User registration with unique usernames
 - User data storage (in-memory)
-- User validation
+- User valida vion
 - User status tracking
 
 ## API Endpoints
