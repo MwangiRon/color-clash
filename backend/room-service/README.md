@@ -7,7 +7,6 @@
 - Validate players via User Service
 
 ## API Endpoints
-
 ### POST /rooms
 Create a new room
 

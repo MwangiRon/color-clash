@@ -1,18 +1,23 @@
 {
   "name": "game-engine-service",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Game logic microservice for Color Clash game",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["microservice", "game-engine", "game"],
+  "author": "Ron Macharia",
+  "license": "MIT",
   "dependencies": {
-    "axios": "^1.12.2",
+    "express": "^4.18.2",
     "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
-    "express": "^5.1.0"
+    "dotenv": "^16.3.1",
+    "uuid": "^9.0.1",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }
