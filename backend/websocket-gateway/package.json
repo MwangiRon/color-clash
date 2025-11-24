@@ -1,24 +1,21 @@
 {
-  "name": "user-service",
+  "name": "websocket-gateway",
   "version": "1.0.0",
-  "description": "User management microservice for Color Clash game",
+  "description": "WebSocket gateway for Color Clash game",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js"
   },
-  "keywords": [
-    "microservice",
-    "user-management",
-    "game"
-  ],
-  "author": "Ron Macharia",
+  "keywords": ["websocket", "gateway", "real-time", "game"],
+  "author": "Your Name",
   "license": "MIT",
   "dependencies": {
+    "ws": "^8.14.2",
     "express": "^4.18.2",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
-    "uuid": "^9.0.1"
+    "axios": "^1.6.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
