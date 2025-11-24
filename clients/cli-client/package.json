@@ -1,17 +1,17 @@
 {
   "name": "cli-client",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "CLI client for Color Clash game",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node src/index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["cli", "game", "websocket"],
+  "author": "Ron Macharia",
+  "license": "MIT",
   "dependencies": {
-    "chalk": "^5.6.2",
-    "inquirer": "^12.9.6",
-    "ws": "^8.18.3"
+    "ws": "^8.14.2",
+    "chalk": "^4.1.2",
+    "dotenv": "^16.3.1"
   }
 }
