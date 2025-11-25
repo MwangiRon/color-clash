@@ -1,0 +1,8 @@
+{
+  "appId": "com.colorclash.game",
+  "appName": "Color Clash",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}

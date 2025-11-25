@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Clash - Modern Strategy Game</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#8b5cf6',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .game-cell {
+            aspect-ratio: 1;
+            transition: all 0.3s ease;
+        }
+        .game-cell:hover:not(.occupied) {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        .red-piece {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+        .blue-piece {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+        .pulse-animation {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+
+    <!-- Navigation Bar -->
+    <nav class="bg-white dark:bg-gray-800 shadow-lg sticky top-0 z-50 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="text-3xl">🎮</div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
+                        Color Clash
+                    </span>
+                </div>
+
+                <!-- Nav Links -->
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="#" onclick="showPage('home')" class="nav-link text-gray-700 dark:text-gray-300 hover:text-blue-500 transition">Home</a>
+                    <a href="#" onclick="showPage('play')" class="nav-link text-gray-700 dark:text-gray-300 hover:text-blue-500 transition">Play</a>
+                    <a href="#" onclick="showPage('how-to-play')" class="nav-link text-gray-700 dark:text-gray-300 hover:text-blue-500 transition">How to Play</a>
+                    
+                    <!-- Auth Section -->
+                    <div id="auth-section-nav">
+                        <button onclick="showPage('login')" class="px-4 py-2 text-blue-500 hover:text-blue-600 transition">
+                            Login
+                        </button>
+                        <button onclick="showPage('register')" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                            Sign Up
+                        </button>
+                    </div>
+                    
+                    <!-- Logged In Section -->
+                    <div id="logged-in-section" class="hidden flex items-center space-x-4">
+                        <span class="text-gray-700 dark:text-gray-300">👤 <span id="nav-username"></span></span>
+                        <button onclick="logout()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+                            Logout
+                        </button>
+                    </div>
+
+                    <!-- Dark Mode Toggle -->
+                    <button onclick="toggleDarkMode()" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                        <span id="theme-icon">🌙</span>
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg bg-gray-200 dark:bg-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+            <div class="px-4 py-3 space-y-2">
+                <a href="#" onclick="showPage('home')" class="block py-2 text-gray-700 dark:text-gray-300">Home</a>
+                <a href="#" onclick="showPage('play')" class="block py-2 text-gray-700 dark:text-gray-300">Play</a>
+                <a href="#" onclick="showPage('how-to-play')" class="block py-2 text-gray-700 dark:text-gray-300">How to Play</a>
+                <button onclick="toggleDarkMode()" class="w-full text-left py-2 text-gray-700 dark:text-gray-300">
+                    Toggle Theme <span id="theme-icon-mobile">🌙</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Home Page -->
+        <div id="home-page" class="page">
+            <div class="text-center mb-12">
+                <h1 class="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                    Welcome to Color Clash
+                </h1>
+                <p class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                    A strategic 4x4 board game where you compete to get four pieces in a row. 
+                    Use your power move wisely to flip your opponent's piece!
+                </p>
+            </div>
+
+            <!-- CTA Buttons -->
+            <div class="flex flex-col sm:flex-row justify-center gap-4 mb-12">
+                <button onclick="showPage('play')" class="px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl text-lg font-semibold hover:from-blue-600 hover:to-blue-700 transition transform hover:scale-105 shadow-lg">
+                    🎮 Play Now
+                </button>
+                <button onclick="showPage('how-to-play')" class="px-8 py-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl text-lg font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition transform hover:scale-105 shadow-lg border-2 border-gray-200 dark:border-gray-700">
+                    📖 Learn How to Play
+                </button>
+            </div>
+
+            <!-- Features -->
+            <div class="grid md:grid-cols-3 gap-6 mt-12">
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg transition hover:shadow-xl">
+                    <div class="text-4xl mb-4">⚡</div>
+                    <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200">Power Moves</h3>
+                    <p class="text-gray-600 dark:text-gray-400">Each player gets one power move to flip an opponent's piece!</p>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg transition hover:shadow-xl">
+                    <div class="text-4xl mb-4">🌐</div>
+                    <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200">Real-time Multiplayer</h3>
+                    <p class="text-gray-600 dark:text-gray-400">Play with friends in real-time using WebSocket technology</p>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg transition hover:shadow-xl">
+                    <div class="text-4xl mb-4">🎯</div>
+                    <h3 class="text-xl font-bold mb-2 text-gray-800 dark:text-gray-200">Strategic Gameplay</h3>
+                    <p class="text-gray-600 dark:text-gray-400">Plan your moves carefully to get 4 in a row!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Page -->
+        <div id="login-page" class="page hidden">
+            <div class="max-w-md mx-auto">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+                    <h2 class="text-3xl font-bold text-center mb-6 text-gray-800 dark:text-gray-200">Login</h2>
+                    <form onsubmit="handleLogin(event)">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 dark:text-gray-300 mb-2">Username</label>
+                            <input type="text" id="login-username" required 
+                                   class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                        </div>
+                        <button type="submit" class="w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-semibold">
+                            Login
+                        </button>
+                    </form>
+                    <p class="text-center mt-4 text-gray-600 dark:text-gray-400">
+                        Don't have an account? 
+                        <a href="#" onclick="showPage('register')" class="text-blue-500 hover:text-blue-600">Sign up</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Register Page -->
+        <div id="register-page" class="page hidden">
+            <div class="max-w-md mx-auto">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+                    <h2 class="text-3xl font-bold text-center mb-6 text-gray-800 dark:text-gray-200">Create Account</h2>
+                    <form onsubmit="handleRegister(event)">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 dark:text-gray-300 mb-2">Username</label>
+                            <input type="text" id="register-username" required minlength="3"
+                                   class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">At least 3 characters</p>
+                        </div>
+                        <button type="submit" class="w-full py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-semibold">
+                            Sign Up
+                        </button>
+                    </form>
+                    <p class="text-center mt-4 text-gray-600 dark:text-gray-400">
+                        Already have an account? 
+                        <a href="#" onclick="showPage('login')" class="text-blue-500 hover:text-blue-600">Login</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Play Page -->
+        <div id="play-page" class="page hidden">
+            <!-- Guest Mode Banner -->
+            <div id="guest-mode-banner" class="bg-yellow-100 dark:bg-yellow-900 border-l-4 border-yellow-500 p-4 mb-6 rounded">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="font-semibold text-yellow-800 dark:text-yellow-200">Guest Mode</p>
+                        <p class="text-sm text-yellow-700 dark:text-yellow-300">Login to access multiplayer and save your progress</p>
+                    </div>
+                    <button onclick="showPage('login')" class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition">
+                        Login
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mode Selection -->
+            <div id="mode-selection" class="grid md:grid-cols-2 gap-6 mb-8">
+                <div onclick="startPracticeMode()" class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg cursor-pointer hover:shadow-2xl transition transform hover:scale-105">
+                    <div class="text-5xl mb-4">🤖</div>
+                    <h3 class="text-2xl font-bold mb-2 text-gray-800 dark:text-gray-200">Practice Mode</h3>
+                    <p class="text-gray-600 dark:text-gray-400">Play against the computer to learn the game</p>
+                    <button class="mt-4 px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
+                        Start Practice
+                    </button>
+                </div>
+
+                <div onclick="checkAuthForMultiplayer()" class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg cursor-pointer hover:shadow-2xl transition transform hover:scale-105">
+                    <div class="text-5xl mb-4">👥</div>
+                    <h3 class="text-2xl font-bold mb-2 text-gray-800 dark:text-gray-200">Multiplayer</h3>
+                    <p class="text-gray-600 dark:text-gray-400">Play with friends in real-time</p>
+                    <button class="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                        Play Online
+                    </button>
+                </div>
+            </div>
+
+            <!-- Multiplayer Options -->
+            <div id="multiplayer-options" class="hidden mb-8">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                    <h3 class="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">Multiplayer Options</h3>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <button onclick="createRoom()" class="px-6 py-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-semibold">
+                            🆕 Create New Room
+                        </button>
+                        <button onclick="showJoinRoomDialog()" class="px-6 py-4 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition font-semibold">
+                            🚪 Join Room
+                        </button>
+                    </div>
+
+                    <!-- Room Info -->
+                    <div id="room-info" class="hidden mt-6 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Room ID:</p>
+                        <div class="flex items-center justify-between mt-2">
+                            <code id="room-id-display" class="text-lg font-mono text-blue-500"></code>
+                            <button onclick="copyRoomId()" class="px-4 py-2 bg-gray-300 dark:bg-gray-600 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition text-sm">
+                                📋 Copy
+                            </button>
+                        </div>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">Share this ID with your friend!</p>
+                    </div>
+
+                    <!-- Waiting for Opponent -->
+                    <div id="waiting-opponent" class="hidden mt-6 text-center">
+                        <div class="pulse-animation inline-block text-4xl mb-2">⏳</div>
+                        <p class="text-lg text-gray-600 dark:text-gray-400">Waiting for opponent...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Board -->
+            <div id="game-container" class="hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6">
+                    <!-- Game Header -->
+                    <div class="flex justify-between items-center mb-6">
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-200">Game In Progress</h3>
+                            <p id="turn-indicator" class="text-gray-600 dark:text-gray-400 mt-1"></p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-gray-600 dark:text-gray-400">Your Color:</p>
+                            <div id="player-color-display" class="text-2xl mt-1"></div>
+                        </div>
+                    </div>
+
+                    <!-- Power Move Status -->
+                    <div id="power-move-status" class="mb-4 p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                        <span class="text-purple-800 dark:text-purple-200">⚡ Power Move Available</span>
+                        <label class="inline-flex items-center ml-4">
+                            <input type="checkbox" id="power-move-toggle" class="form-checkbox h-5 w-5 text-purple-600">
+                            <span class="ml-2 text-gray-700 dark:text-gray-300">Use Power Move</span>
+                        </label>
+                    </div>
+
+                    <!-- Game Board Grid -->
+                    <div class="grid grid-cols-4 gap-3 max-w-md mx-auto mb-6">
+                        <!-- Cells will be generated by JavaScript -->
+                    </div>
+
+                    <!-- Game Actions -->
+                    <div class="flex justify-center gap-4">
+                        <button onclick="leaveGame()" class="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition">
+                            Leave Game
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- How to Play Page -->
+        <div id="how-to-play-page" class="page hidden">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-4xl font-bold text-center mb-8 text-gray-800 dark:text-gray-200">How to Play</h2>
+                
+                <div class="space-y-6">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                        <h3 class="text-2xl font-bold mb-3 text-gray-800 dark:text-gray-200">🎯 Objective</h3>
+                        <p class="text-gray-600 dark:text-gray-400">Get 4 pieces in a row (horizontal, vertical, or diagonal) before your opponent does!</p>
+                    </div>
+
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                        <h3 class="text-2xl font-bold mb-3 text-gray-800 dark:text-gray-200">🎮 Gameplay</h3>
+                        <ul class="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400">
+                            <li>The game is played on a 4x4 grid (16 cells)</li>
+                            <li>Red player goes first, then players alternate turns</li>
+                            <li>Click an empty cell to place your piece</li>
+                            <li>First player to get 4 in a row wins!</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                        <h3 class="text-2xl font-bold mb-3 text-gray-800 dark:text-gray-200">⚡ Power Move</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-2">Each player has ONE power move per game:</p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400">
+                            <li>Toggle "Use Power Move" checkbox</li>
+                            <li>Click an opponent's piece to flip it to your color</li>
+                            <li>Use it strategically - you only get one!</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                        <h3 class="text-2xl font-bold mb-3 text-gray-800 dark:text-gray-200">🏆 Winning Patterns</h3>
+                        <div class="grid grid-cols-3 gap-4 mt-4">
+                            <div class="text-center">
+                                <p class="font-semibold text-gray-700 dark:text-gray-300 mb-2">Horizontal</p>
+                                <div class="text-2xl">━━━━</div>
+                            </div>
+                            <div class="text-center">
+                                <p class="font-semibold text-gray-700 dark:text-gray-300 mb-2">Vertical</p>
+                                <div class="text-2xl">┃<br>┃<br>┃<br>┃</div>
+                            </div>
+                            <div class="text-center">
+                                <p class="font-semibold text-gray-700 dark:text-gray-300 mb-2">Diagonal</p>
+                                <div class="text-2xl">╲<br>&nbsp;╲<br>&nbsp;&nbsp;╲<br>&nbsp;&nbsp;&nbsp;╲</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-8">
+                    <button onclick="showPage('play')" class="px-8 py-4 bg-blue-500 text-white rounded-xl text-lg font-semibold hover:bg-blue-600 transition">
+                        Ready to Play!
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="fixed bottom-4 right-4 space-y-2 z-50"></div>
+
+    <script src="js/app.js"></script>
+    <script src="js/websocket.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/ui.js"></script>
+</body>
+</html>
