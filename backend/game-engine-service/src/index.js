@@ -1,31 +1,31 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
+const express = require("express");
+const cors = require("cors");
+require("dotenv").config();
 
-const gameRoutes = require('./routes/gameRoutes');
-const logger = require('./utils/logger');
+const gameRoutes = require("./routes/gameRoutes");
+const logger = require("./utils/logger");
 
 const app = express();
 const PORT = process.env.PORT || 3003;
 
-// middle wares
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// init routes
-app.use('/game', gameRoutes);
+// Routes
+app.use("/games", gameRoutes);
 
-// health check
-app.get('/health', (req, res) => {
-    res.json({ 
-        status: 'healthy', 
-        service: 'game-engine-service',
-        timestamp: new Date().toISOString()
-    });
+// Health check
+app.get("/health", (req, res) => {
+  res.json({
+    status: "healthy",
+    service: "game-engine-service",
+    timestamp: new Date().toISOString(),
+  });
 });
 
-// starting the server
+// Start server
 app.listen(PORT, () => {
-    logger.info(`✅ Game Engine Service running on port ${PORT}`);
-    logger.info(`📡 Health check: http://localhost:${PORT}/health`);
+  logger.info(`Game Engine Service running on port ${PORT}`);
+  logger.info(`Health check: http://localhost:${PORT}/health`);
 });
