@@ -3,6 +3,16 @@
   "appName": "Color Clash",
   "webDir": "www",
   "server": {
-    "androidScheme": "https"
+    "androidScheme": "https",
+    "cleartext": true,
+    "allowNavigation": [
+      "localhost"
+    ]
+  },
+  "android": {
+    "buildOptions": {
+      "keystorePath": "",
+      "keystoreAlias": ""
+    }
   }
 }
