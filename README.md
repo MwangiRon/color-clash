@@ -59,6 +59,6 @@ A vanilla JavaScript application using Tailwind CSS for styling. It connects to 
 ## Features
 
 *   **Real-time Multiplayer**: Play against friends or random opponents.
-*   **Practice Mode**: Play against an AI locally.
+*   **Practice Mode**: Play against computer locally.
 *   **Power Moves**: Special abilities to flip opponent pieces.
 *   **Responsive Design**: Works on desktop and mobile.
