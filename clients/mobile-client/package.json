@@ -1,9 +1,11 @@
 {
-  "name": "mobile-client",
+  "name": "color-clash-mobile-client",
   "version": "1.0.0",
-  "description": "Mobile client for Color Clash game",
+  "description": "Color Clash Game Mobile Client",
   "main": "index.js",
   "scripts": {
+    "start": "npx http-server www -p 8080 -o",
+    "dev": "npx http-server www -p 8080",
     "sync": "npx cap sync",
     "copy": "npx cap copy",
     "open:android": "npx cap open android",
@@ -11,7 +13,11 @@
     "build:android": "npx cap sync android && npx cap open android",
     "build:ios": "npx cap sync ios && npx cap open ios"
   },
-  "keywords": ["mobile", "capacitor", "game"],
+  "keywords": [
+    "mobile",
+    "capacitor",
+    "game"
+  ],
   "author": "Ron Macharia",
   "license": "MIT",
   "dependencies": {

@@ -48,25 +48,7 @@ function renderBoard() {
 
   cells.forEach((cell, index) => {
     const value = gameBoard[index];
-    cell.classList.remove("red-piece", "blue-piece", "occupied");
-    cell.innerHTML = "";
-
-    if (value === "red") {
-      cell.classList.add("red-piece", "occupied");
-      const icon = document.createElement("span");
-      icon.className = "material-icons text-white text-4xl";
-      icon.textContent = "circle";
-      cell.appendChild(icon);
-    } else if (value === "blue") {
-      cell.classList.add("blue-piece", "occupied");
-      const icon = document.createElement("span");
-      icon.className = "material-icons text-white text-4xl";
-      icon.textContent = "circle";
-      cell.appendChild(icon);
-    } else {
-      cell.textContent = index;
-      cell.classList.add("text-gray-400", "dark:text-gray-600");
-    }
+    GameRenderer.renderCell(cell, index, value, true);
   });
 }
 

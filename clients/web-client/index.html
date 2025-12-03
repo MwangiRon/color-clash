@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Color Clash - Modern Strategy Game</title>
+    
+    <!-- External CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
@@ -22,45 +27,162 @@
         },
       };
     </script>
-    <style>
-      .game-cell {
-        aspect-ratio: 1;
-        transition: all 0.3s ease;
-      }
-      .game-cell:hover:not(.occupied) {
-        transform: scale(1.05);
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-      }
-      .red-piece {
-        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.5);
-      }
-      .blue-piece {
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.5);
-      }
-      .page-transition {
-        animation: fadeIn 0.3s ease-in;
-      }
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-    </style>
   </head>
   <body
     class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 text-gray-900 dark:text-gray-100 min-h-screen"
   >
+    <!-- Navigation Bar -->
+    <nav
+      class="bg-white dark:bg-gray-800 shadow-lg sticky top-0 z-50 transition-colors duration-300"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <!-- Logo -->
+          <div
+            class="flex items-center space-x-3 cursor-pointer"
+            onclick="showPage('landing')"
+          >
+            <span class="material-icons text-3xl text-blue-500">games</span>
+            <span
+              class="text-xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent"
+            >
+              Color Clash
+            </span>
+          </div>
+
+          <!-- Nav Links -->
+          <div class="hidden md:flex items-center space-x-6">
+            <a
+              href="#"
+              onclick="showPage('landing'); return false;"
+              class="text-gray-700 dark:text-gray-300 hover:text-blue-500 transition"
+              >Home</a
+            >
+            <a
+              href="#"
+              onclick="startPracticeMode(); return false;"
+              class="text-gray-700 dark:text-gray-300 hover:text-blue-500 transition"
+              >Practice</a
+            >
+
+            <!-- Guest Auth Section -->
+            <div id="auth-section-nav" class="flex items-center space-x-2">
+              <button
+                onclick="showPage('auth')"
+                class="px-4 py-2 text-blue-500 hover:text-blue-600 transition"
+              >
+                Login
+              </button>
+              <button
+                onclick="goToMultiplayer()"
+                class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+              >
+                Play Online
+              </button>
+            </div>
+
+            <!-- Logged In Section -->
+            <div id="logged-in-section" class="hidden items-center space-x-4">
+              <button
+                onclick="showPage('play')"
+                class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition flex items-center"
+              >
+                <span class="material-icons text-sm mr-1">videogame_asset</span>
+                Play
+              </button>
+              <span class="text-gray-700 dark:text-gray-300 flex items-center">
+                <span class="material-icons text-sm mr-1">person</span>
+                <span id="nav-username"></span>
+              </span>
+              <button
+                onclick="logout()"
+                class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition flex items-center"
+              >
+                <span class="material-icons text-sm mr-1">logout</span>
+                Logout
+              </button>
+            </div>
+
+            <!-- Dark Mode Toggle -->
+            <button
+              onclick="toggleDarkMode()"
+              class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+            >
+              <span id="theme-icon" class="material-icons">🌙</span>
+            </button>
+          </div>
+
+          <!-- Mobile Menu Button -->
+          <button
+            onclick="toggleMobileMenu()"
+            class="md:hidden p-2 rounded-lg bg-gray-200 dark:bg-gray-700"
+          >
+            <span class="material-icons">menu</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div
+        id="mobile-menu"
+        class="hidden md:hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700"
+      >
+        <div class="px-4 py-3 space-y-2">
+          <a
+            href="#"
+            onclick="showPage('landing'); return false;"
+            class="block py-2 text-gray-700 dark:text-gray-300"
+            >Home</a
+          >
+          <a
+            href="#"
+            onclick="startPracticeMode(); return false;"
+            class="block py-2 text-gray-700 dark:text-gray-300"
+            >Practice</a
+          >
+          <div id="mobile-auth-section">
+            <a
+              href="#"
+              onclick="showPage('auth'); return false;"
+              class="block py-2 text-gray-700 dark:text-gray-300"
+              >Login</a
+            >
+            <a
+              href="#"
+              onclick="goToMultiplayer(); return false;"
+              class="block py-2 text-blue-500"
+              >Play Online</a
+            >
+          </div>
+          <div id="mobile-logged-in" class="hidden">
+            <a
+              href="#"
+              onclick="showPage('play'); return false;"
+              class="block py-2 text-gray-700 dark:text-gray-300"
+              >Play</a
+            >
+            <a
+              href="#"
+              onclick="logout(); return false;"
+              class="block py-2 text-red-500"
+              >Logout</a
+            >
+          </div>
+          <button
+            onclick="toggleDarkMode()"
+            class="w-full text-left py-2 text-gray-700 dark:text-gray-300 flex items-center"
+          >
+            Toggle Theme
+            <span id="theme-icon-mobile" class="material-icons ml-2">🌙</span>
+          </button>
+        </div>
+      </div>
+    </nav>
+
     <!-- Landing Page -->
     <div
       id="landing-page"
-      class="min-h-screen flex items-center justify-center p-4"
+      class="page min-h-screen flex items-center justify-center p-4"
     >
       <div class="max-w-4xl w-full">
         <div class="text-center mb-12">
@@ -88,7 +210,7 @@
               <h3 class="text-2xl font-bold">Practice Mode</h3>
             </div>
             <p class="text-gray-600 dark:text-gray-400 mb-6">
-              Play against yourself and master your strategy
+              Play against AI and master your strategy
             </p>
             <button
               onclick="startPracticeMode()"
@@ -112,7 +234,7 @@
               Challenge players from around the world
             </p>
             <button
-              onclick="checkAuthForMultiplayer()"
+              onclick="goToMultiplayer()"
               class="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-semibold transition flex items-center justify-center"
             >
               <span class="material-icons mr-2">lan</span>
@@ -161,18 +283,18 @@
               </div>
               <h4 class="font-semibold mb-2">Power Move</h4>
               <p class="text-sm text-gray-600 dark:text-gray-400">
-                Flip opponent's piece once
+                Flip opponent's piece once per game
               </p>
             </div>
           </div>
 
           <div class="text-center mt-8">
             <button
-              onclick="showPage('play')"
+              onclick="startPracticeMode()"
               class="px-8 py-4 bg-blue-500 text-white rounded-xl text-lg font-semibold hover:bg-blue-600 transition flex items-center justify-center mx-auto"
             >
               <span class="material-icons mr-2">rocket_launch</span>
-              Ready to Play!
+              Start Playing Now!
             </button>
           </div>
         </div>
@@ -182,7 +304,7 @@
     <!-- Auth Page -->
     <div
       id="auth-page"
-      class="hidden min-h-screen flex items-center justify-center p-4"
+      class="page hidden min-h-screen flex items-center justify-center p-4 pt-24"
     >
       <div
         class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 w-full max-w-md"
@@ -192,12 +314,12 @@
             >account_circle</span
           >
         </div>
-        <h2 class="text-3xl font-bold text-center mb-2">Welcome Back</h2>
+        <h2 class="text-3xl font-bold text-center mb-2">Welcome</h2>
         <p class="text-center text-gray-600 dark:text-gray-400 mb-8">
-          Enter your username to continue
+          Enter your username to play online
         </p>
 
-        <form id="auth-form" class="space-y-6">
+        <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-6">
           <div>
             <label class="block text-sm font-medium mb-2 flex items-center">
               <span class="material-icons text-sm mr-2">person</span>
@@ -228,7 +350,7 @@
           class="w-full mt-4 py-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 font-semibold rounded-xl transition flex items-center justify-center"
         >
           <span class="material-icons mr-2">arrow_back</span>
-          Back
+          Back to Home
         </button>
 
         <div
@@ -242,7 +364,7 @@
     </div>
 
     <!-- Play Page (Lobby) -->
-    <div id="play-page" class="hidden min-h-screen p-4">
+    <div id="play-page" class="page hidden min-h-screen p-4 pt-24">
       <div class="max-w-6xl mx-auto">
         <!-- Header -->
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 mb-6">
@@ -269,13 +391,6 @@
               >
                 <span class="material-icons mr-2">arrow_back</span>
                 Back
-              </button>
-              <button
-                onclick="logout()"
-                class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold transition flex items-center"
-              >
-                <span class="material-icons mr-2">logout</span>
-                Logout
               </button>
             </div>
           </div>
@@ -375,7 +490,7 @@
     </div>
 
     <!-- Game Page -->
-    <div id="game-page" class="hidden min-h-screen p-4">
+    <div id="game-page" class="page hidden min-h-screen p-4 pt-24">
       <div class="max-w-4xl mx-auto">
         <!-- Game Header -->
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 mb-6">
@@ -392,13 +507,22 @@
                 </p>
               </div>
             </div>
-            <button
-              onclick="leaveGame()"
-              class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold transition flex items-center"
-            >
-              <span class="material-icons mr-2">exit_to_app</span>
-              Leave
-            </button>
+            <div class="flex gap-3">
+              <button
+                onclick="showPage('landing')"
+                class="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-xl font-semibold transition flex items-center"
+              >
+                <span class="material-icons mr-2">arrow_back</span>
+                Back
+              </button>
+              <button
+                onclick="leaveGame()"
+                class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold transition flex items-center"
+              >
+                <span class="material-icons mr-2">exit_to_app</span>
+                Leave
+              </button>
+            </div>
           </div>
         </div>
 
@@ -532,6 +656,7 @@
       class="fixed bottom-4 right-4 space-y-2 z-50"
     ></div>
 
+    <!-- JavaScript Files -->
     <script src="js/app.js"></script>
     <script src="js/websocket.js"></script>
     <script src="js/game.js"></script>

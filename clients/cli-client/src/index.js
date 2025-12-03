@@ -26,11 +26,29 @@ function clearScreen() {
   console.clear();
 }
 
+// Utility functions
+const formatters = {
+  title: () => {
+    console.log(chalk.cyan.bold("\n╔════════════════════════════════╗"));
+    console.log(chalk.cyan.bold("║      COLOR CLASH GAME          ║"));
+    console.log(chalk.cyan.bold("╚════════════════════════════════╝\n"));
+  },
+
+  separator: () => {
+    console.log(chalk.yellow("═══════════════════════════════"));
+  },
+
+  error: (msg) => console.log(chalk.red(`[ERROR] ${msg}`)),
+  success: (msg) => console.log(chalk.green(`[SUCCESS] ${msg}`)),
+  info: (msg) => console.log(chalk.yellow(`[INFO] ${msg}`)),
+
+  colorText: (color) =>
+    color === "red" ? chalk.red("RED") : chalk.blue("BLUE"),
+};
+
 // Print title
 function printTitle() {
-  console.log(chalk.cyan.bold("\n╔════════════════════════════════╗"));
-  console.log(chalk.cyan.bold("║      COLOR CLASH GAME          ║"));
-  console.log(chalk.cyan.bold("╚════════════════════════════════╝\n"));
+  formatters.title();
 }
 
 // Print board
