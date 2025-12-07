@@ -47,6 +47,43 @@ exports.registerUser = (req, res) => {
     }
 };
 
+// Login user
+exports.loginUser = (req, res) => {
+    try {
+        const { username } = req.body;
+
+        if (!username) {
+            return res.status(400).json({ 
+                error: 'Username is required' 
+            });
+        }
+
+        const user = UserModel.findByUsername(username);
+
+        if (!user) {
+            return res.status(404).json({ 
+                error: 'User not found' 
+            });
+        }
+
+        logger.info(`User logged in: ${username} (${user.userId})`);
+
+        res.json({
+            success: true,
+            user: {
+                userId: user.userId,
+                username: user.username,
+                createdAt: user.createdAt
+            }
+        });
+    } catch (error) {
+        logger.error('Error logging in user:', error);
+        res.status(500).json({ 
+            error: 'Internal server error' 
+        });
+    }
+};
+
 // Get user by ID
 exports.getUserById = (req, res) => {
     try {

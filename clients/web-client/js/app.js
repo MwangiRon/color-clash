@@ -1,8 +1,9 @@
-// Global State
 let isLoggedIn = false;
 let currentUser = null;
 let currentUserId = null;
+let currentRoomId = null;
 let currentPage = "home";
+let authMode = "login"; // login or register
 let darkMode = localStorage.getItem("darkMode") === "true";
 
 // Practice Mode State
@@ -27,6 +28,14 @@ document.addEventListener("DOMContentLoaded", () => {
     currentUser = savedUser;
     currentUserId = savedUserId;
     isLoggedIn = true;
+
+    // Auto-connect to WebSocket
+    connectWebSocket(() => {
+      sendWebSocketMessage({
+        type: "LOGIN_USER",
+        payload: { username: savedUser },
+      });
+    });
   }
 
   updateAuthUI();
@@ -83,6 +92,43 @@ function toggleMobileMenu() {
   }
 }
 
+// Auth Mode Switching
+function switchAuthMode(mode) {
+  authMode = mode;
+  
+  // Update Tabs
+  const loginTab = document.getElementById("tab-login");
+  const registerTab = document.getElementById("tab-register");
+  const title = document.getElementById("auth-title");
+  const subtitle = document.getElementById("auth-subtitle");
+  const submitBtn = document.querySelector("#auth-submit-btn span");
+  
+  const activeClasses = ["bg-gradient-to-r", "from-blue-600", "to-purple-600", "text-white", "shadow-md"];
+  const inactiveClasses = ["text-gray-500", "dark:text-gray-400", "hover:text-gray-900", "dark:hover:text-white"];
+  
+  if (mode === "login") {
+    loginTab.classList.add(...activeClasses);
+    loginTab.classList.remove(...inactiveClasses);
+    
+    registerTab.classList.remove(...activeClasses);
+    registerTab.classList.add(...inactiveClasses);
+    
+    title.textContent = "Welcome Back!";
+    subtitle.textContent = "Enter your username to continue";
+    submitBtn.textContent = "Login";
+  } else {
+    registerTab.classList.add(...activeClasses);
+    registerTab.classList.remove(...inactiveClasses);
+    
+    loginTab.classList.remove(...activeClasses);
+    loginTab.classList.add(...inactiveClasses);
+    
+    title.textContent = "Create Account";
+    subtitle.textContent = "Choose a username to get started";
+    submitBtn.textContent = "Register";
+  }
+}
+
 // Authentication
 function handleAuth(event) {
   event.preventDefault();
@@ -94,10 +140,11 @@ function handleAuth(event) {
     return;
   }
 
-  // Connect to WebSocket and register
+  // Connect to WebSocket and register/login
   connectWebSocket(() => {
+    const type = authMode === "login" ? "LOGIN_USER" : "REGISTER_USER";
     sendWebSocketMessage({
-      type: "REGISTER_USER",
+      type: type,
       payload: { username },
     });
   });

@@ -17,6 +17,16 @@ class HttpClient {
         }
     }
 
+    static async loginUser(username) {
+        try {
+            const response = await axios.post(`${USER_SERVICE_URL}/users/login`, { username });
+            return response.data;
+        } catch (error) {
+            logger.error('Error logging in user:', error.response?.data || error.message);
+            return { success: false, error: error.response?.data?.error || 'Login failed' };
+        }
+    }
+
     static async getUser(userId) {
         try {
             const response = await axios.get(`${USER_SERVICE_URL}/users/${userId}`);

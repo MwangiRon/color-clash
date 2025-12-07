@@ -304,61 +304,50 @@
     <!-- Auth Page -->
     <div
       id="auth-page"
-      class="page hidden min-h-screen flex items-center justify-center p-4 pt-24"
+      class="page hidden min-h-screen flex items-center justify-center p-4 pt-24 bg-gray-100 dark:bg-gray-900"
     >
-      <div
-        class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 w-full max-w-md"
-      >
-        <div class="flex items-center justify-center mb-6">
-          <span class="material-icons text-6xl text-blue-500"
-            >account_circle</span
-          >
+      <!-- Auth Container -->
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 w-full max-w-md overflow-hidden relative">
+        
+        <!-- Auth Tabs -->
+        <div class="flex p-2 bg-gray-50 dark:bg-gray-900/50 border-b border-gray-200 dark:border-gray-700">
+          <button id="tab-login" class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md" onclick="switchAuthMode('login')">Login</button>
+          <button id="tab-register" class="flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white" onclick="switchAuthMode('register')">Register</button>
         </div>
-        <h2 class="text-3xl font-bold text-center mb-2">Welcome</h2>
-        <p class="text-center text-gray-600 dark:text-gray-400 mb-8">
-          Enter your username to play online
-        </p>
 
-        <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-6">
-          <div>
-            <label class="block text-sm font-medium mb-2 flex items-center">
-              <span class="material-icons text-sm mr-2">person</span>
-              Username
-            </label>
-            <input
-              type="text"
-              id="username-input"
-              placeholder="Choose a username (3-20 characters)"
-              class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-              required
-              minlength="3"
-              maxlength="20"
-            />
+        <div class="p-8">
+          <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/30 mb-4">
+              <span class="material-icons text-3xl text-blue-600 dark:text-blue-400">lock_person</span>
+            </div>
+            <h2 id="auth-title" class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Welcome Back!</h2>
+            <p id="auth-subtitle" class="text-gray-600 dark:text-gray-400">Enter your username to continue</p>
           </div>
 
-          <button
-            type="submit"
-            class="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition flex items-center justify-center"
-          >
-            <span class="material-icons mr-2">login</span>
-            Continue
-          </button>
-        </form>
+          <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-5">
+            <div>
+              <label for="username" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Username</label>
+              <div class="relative">
+                <span class="absolute left-4 top-3.5 material-icons text-gray-400 text-xl">person_outline</span>
+                <input type="text" id="username-input" class="w-full pl-11 pr-4 py-3 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-medium" placeholder="Choose a username" required minlength="3" maxlength="20">
+              </div>
+            </div>
+            
+            <button type="submit" id="auth-submit-btn" class="w-full py-3.5 px-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold rounded-xl shadow-lg transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2 group">
+              <span>Login</span>
+              <span class="material-icons group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </button>
+          </form>
 
-        <button
-          onclick="showPage('landing')"
-          class="w-full mt-4 py-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 font-semibold rounded-xl transition flex items-center justify-center"
-        >
-          <span class="material-icons mr-2">arrow_back</span>
-          Back to Home
-        </button>
-
-        <div
-          id="auth-error"
-          class="mt-6 p-4 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 rounded-xl hidden flex items-center"
-        >
-          <span class="material-icons mr-2">error</span>
-          <span></span>
+          <div class="mt-6 pt-6 border-t border-gray-100 dark:border-gray-700/50 text-center">
+            <button
+              onclick="showPage('landing')"
+              class="text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center justify-center mx-auto"
+            >
+              <span class="material-icons text-sm mr-1">arrow_back</span>
+              Back to Home
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -476,6 +465,19 @@
             <span class="text-yellow-700 dark:text-yellow-300 font-semibold"
               >Waiting for opponent to join...</span
             >
+          </div>
+
+          <div id="start-game-section" class="hidden">
+            <button
+              onclick="startGame()"
+              class="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl font-bold text-lg shadow-lg transform transition-all duration-200 hover:scale-[1.02] flex items-center justify-center"
+            >
+              <span class="material-icons mr-2 text-2xl">play_circle</span>
+              Start Game
+            </button>
+            <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-2">
+              Both players are ready!
+            </p>
           </div>
 
           <button
@@ -605,6 +607,40 @@
       </div>
     </div>
 
+    <!-- Game Over Dialog -->
+    <div
+      id="game-over-dialog"
+      class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+    >
+      <div
+        class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 w-full max-w-md text-center transform transition-all scale-100"
+      >
+        <div class="mb-6">
+          <span id="game-over-icon" class="material-icons text-6xl text-yellow-500 mb-4 animate-bounce">emoji_events</span>
+          <h2 id="game-over-title" class="text-3xl font-bold mb-2">Game Over!</h2>
+          <p id="game-over-message" class="text-xl text-gray-600 dark:text-gray-300">Player Wins!</p>
+        </div>
+        
+        <div class="space-y-3">
+          <button
+            onclick="onPlayAgain()"
+            class="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-bold shadow-lg transition transform hover:scale-105 flex items-center justify-center"
+          >
+            <span class="material-icons mr-2">replay</span>
+            Play Again
+          </button>
+          
+          <button
+            onclick="onGoHome()"
+            class="w-full py-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white rounded-xl font-semibold transition flex items-center justify-center"
+          >
+            <span class="material-icons mr-2">home</span>
+            Go Home
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Join Room Dialog -->
     <div
       id="join-room-dialog"
@@ -657,9 +693,9 @@
     ></div>
 
     <!-- JavaScript Files -->
-    <script src="js/app.js"></script>
-    <script src="js/websocket.js"></script>
-    <script src="js/game.js"></script>
-    <script src="js/ui.js"></script>
+    <script src="js/app.js?v=2"></script>
+    <script src="js/websocket.js?v=2"></script>
+    <script src="js/ui.js?v=2"></script>
+    <script src="js/game.js?v=2"></script>
   </body>
 </html>

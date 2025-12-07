@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use("/games", gameRoutes);
+app.use("/game", gameRoutes);
 
 // Health check
 app.get("/health", (req, res) => {

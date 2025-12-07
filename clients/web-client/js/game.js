@@ -1,5 +1,5 @@
 let gameBoard = Array(16).fill(null);
-let currentRoomId = null;
+// currentRoomId is defined in app.js
 let myColor = null;
 let currentTurn = null;
 let powerMoveUsed = false;
@@ -14,8 +14,7 @@ function startGameUI(gameData) {
   powerMoveUsed = myPlayer.powerMoveUsed;
 
   // Show game container
-  document.getElementById("multiplayer-options").classList.add("hidden");
-  document.getElementById("game-container").classList.remove("hidden");
+  showPage("game");
 
   // Set up board
   createGameBoard();
@@ -27,7 +26,7 @@ function startGameUI(gameData) {
 }
 
 function createGameBoard() {
-  const boardContainer = document.querySelector("#game-container .grid");
+  const boardContainer = document.getElementById("game-board");
   boardContainer.innerHTML = "";
 
   for (let i = 0; i < 16; i++) {
@@ -58,7 +57,8 @@ function handleCellClick(position) {
     return;
   }
 
-  const isPowerMove = document.getElementById("power-move-toggle").checked;
+  const btn = document.getElementById("power-move-btn");
+  const isPowerMove = btn && btn.dataset.active === "true";
 
   // Validate move
   if (isPowerMove) {
@@ -96,13 +96,19 @@ function updateGameBoard(moveData) {
   if (moveData.userId === currentUserId) {
     powerMoveUsed = moveData.powerMoveUsed || powerMoveUsed;
   }
-
+  
+  console.log("Updating board:", moveData.board);
   renderBoard();
   updateTurnIndicator();
   updatePowerMoveStatus();
 
   // Uncheck power move toggle
-  document.getElementById("power-move-toggle").checked = false;
+  // Reset power move toggle visual state
+  const btn = document.getElementById("power-move-btn");
+  if (btn) {
+    btn.classList.remove("ring-4", "ring-white");
+    btn.dataset.active = "false";
+  }
 
   const mover = moveData.userId === currentUserId ? "You" : moveData.username;
   const action = moveData.isPowerMove ? "used power move" : "moved";
@@ -110,69 +116,117 @@ function updateGameBoard(moveData) {
 }
 
 function updateTurnIndicator() {
-  const indicator = document.getElementById("turn-indicator");
+  const statusText = document.getElementById("game-status-text");
+  const banner = document.getElementById("game-status-banner");
+  
   if (currentTurn === currentUserId) {
-    indicator.textContent = "🎮 Your Turn!";
-    indicator.className =
-      "text-green-600 dark:text-green-400 mt-1 font-semibold";
+    statusText.textContent = "🎮 Your Turn!";
+    banner.className = "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-2xl p-4 mb-6 flex items-center justify-center shadow-lg transition-colors";
   } else {
-    indicator.textContent = "⏳ Opponent's Turn";
-    indicator.className = "text-gray-600 dark:text-gray-400 mt-1";
+    statusText.textContent = "⏳ Opponent's Turn";
+    banner.className = "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 rounded-2xl p-4 mb-6 flex items-center justify-center shadow-lg transition-colors";
   }
 }
 
 function updatePlayerColorDisplay() {
-  const display = document.getElementById("player-color-display");
-  if (myColor === "red") {
-    display.innerHTML = '<span class="text-red-500">🔴 Red</span>';
-  } else {
-    display.innerHTML = '<span class="text-blue-500">🔵 Blue</span>';
+  const redCard = document.getElementById("player-red-card");
+  const blueCard = document.getElementById("player-blue-card");
+  
+  // Reset opacity
+  if (redCard) redCard.style.opacity = "0.5";
+  if (blueCard) blueCard.style.opacity = "0.5";
+
+  // Highlight my card
+  if (myColor === "red" && redCard) {
+    redCard.style.opacity = "1";
+    redCard.classList.add("ring-2", "ring-white");
+  } else if (myColor === "blue" && blueCard) {
+    blueCard.style.opacity = "1";
+    blueCard.classList.add("ring-2", "ring-white");
   }
 }
 
 function updatePowerMoveStatus() {
-  const status = document.getElementById("power-move-status");
-  const toggle = document.getElementById("power-move-toggle");
+  const btn = document.getElementById("power-move-btn");
+  if (!btn) return;
+
+  btn.classList.remove("hidden");
 
   if (powerMoveUsed) {
-    status.className = "mb-4 p-3 bg-gray-200 dark:bg-gray-700 rounded-lg";
-    status.innerHTML =
-      '<span class="text-gray-600 dark:text-gray-400">⚡ Power Move Used</span>';
-    toggle.disabled = true;
-    toggle.checked = false;
+    btn.disabled = true;
+    btn.classList.add("opacity-50", "cursor-not-allowed", "grayscale");
+    btn.innerHTML = '<span class="material-icons mr-3 text-2xl">flash_off</span><span>Power Move Used</span>';
   } else {
-    status.className = "mb-4 p-3 bg-purple-100 dark:bg-purple-900 rounded-lg";
-    toggle.disabled = false;
+    btn.disabled = false;
+    btn.classList.remove("opacity-50", "cursor-not-allowed", "grayscale");
+    btn.innerHTML = '<span class="material-icons mr-3 text-2xl">flash_on</span><span>Use Power Move</span>';
+    
+    // Add click handler if not already present (simplified here)
+    btn.onclick = togglePowerMove;
+  }
+}
+
+function togglePowerMove() {
+  const btn = document.getElementById("power-move-btn");
+  const isActive = btn.classList.contains("ring-4");
+  
+  if (isActive) {
+    btn.classList.remove("ring-4", "ring-white");
+    btn.dataset.active = "false";
+  } else {
+    btn.classList.add("ring-4", "ring-white");
+    btn.dataset.active = "true";
   }
 }
 
 function handleGameOver(gameOverData) {
   const winner = gameOverData.winner;
   const isDraw = gameOverData.draw;
-
-  let message = "";
-  let type = "info";
+  
+  const dialog = document.getElementById("game-over-dialog");
+  const title = document.getElementById("game-over-title");
+  const messageEl = document.getElementById("game-over-message");
+  const icon = document.getElementById("game-over-icon");
 
   if (isDraw) {
-    message = "Game ended in a draw!";
-    type = "info";
+    title.textContent = "It's a Draw!";
+    messageEl.textContent = "Well played both!";
+    icon.textContent = "handshake";
+    icon.className = "material-icons text-6xl text-gray-500 mb-4 animate-bounce";
   } else if (winner === currentUserId) {
-    message = "You Win!";
-    type = "success";
+    title.textContent = "You Win!";
+    messageEl.textContent = "Congratulations! You dominated the board.";
+    icon.textContent = "emoji_events";
+    icon.className = "material-icons text-6xl text-yellow-500 mb-4 animate-bounce";
+    showToast("You Win!", "success");
   } else {
-    message = "You Lose!";
-    type = "error";
+    title.textContent = "Game Over";
+    messageEl.textContent = "Better luck next time!";
+    icon.textContent = "sentiment_very_dissatisfied";
+    icon.className = "material-icons text-6xl text-blue-500 mb-4 animate-bounce";
+    showToast("You Lost!", "info");
   }
 
-  showToast(message, type);
-
   setTimeout(() => {
-    if (confirm("Game Over! Play again?")) {
-      leaveGame();
-    }
-  }, 2000);
+     dialog.classList.remove("hidden");
+  }, 1000);
 }
 
+// Game Control
+function startGame() {
+  if (!currentRoomId) return;
+  
+  // Disable button to prevent double-clicks
+  const btn = document.querySelector("#start-game-section button");
+  if (btn) btn.disabled = true;
+
+  sendWebSocketMessage({
+    type: "START_GAME",
+    payload: { roomId: currentRoomId },
+  });
+}
+
+// Reset Game State
 function resetGame() {
   gameBoard = Array(16).fill(null);
   currentRoomId = null;
@@ -183,3 +237,19 @@ function resetGame() {
   document.getElementById("room-info").classList.add("hidden");
   document.getElementById("waiting-opponent").classList.add("hidden");
 }
+
+// Navigation Handlers
+
+// Navigation Handlers
+window.onPlayAgain = function() {
+  document.getElementById("game-over-dialog").classList.add("hidden");
+  leaveGame();
+  showPage("play");
+}
+
+window.onGoHome = function() {
+  document.getElementById("game-over-dialog").classList.add("hidden");
+  leaveGame();
+  showPage("landing");
+}
+

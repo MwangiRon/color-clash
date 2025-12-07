@@ -53,23 +53,25 @@ function handleWebSocketMessage(message) {
       break;
 
     case "USER_REGISTERED":
-      currentUser = message.payload.username;
-      currentUserId = message.payload.userId;
-      isLoggedIn = true;
-
-      // Save to localStorage
-      localStorage.setItem("username", currentUser);
-      localStorage.setItem("userId", currentUserId);
-
-      updateAuthUI();
-      showToast(`Welcome, ${currentUser}!`, "success");
-      showPage("play");
+      if (typeof onUserRegistered === 'function') {
+        onUserRegistered(message.payload);
+      } else {
+        console.error("onUserRegistered function not found");
+        // Fallback if app.js not loaded properly
+        currentUser = message.payload.username;
+        currentUserId = message.payload.userId;
+        isLoggedIn = true;
+        localStorage.setItem("username", currentUser);
+        localStorage.setItem("userId", currentUserId);
+        showToast(`Welcome, ${currentUser}!`, "success");
+        showPage("play");
+      }
       break;
 
     case "ROOM_CREATED":
       currentRoomId = message.payload.roomId;
       document.getElementById("room-info").classList.remove("hidden");
-      document.getElementById("room-id-display").textContent = currentRoomId;
+      document.getElementById("current-room-id").textContent = message.payload.roomId;
       document.getElementById("waiting-opponent").classList.remove("hidden");
       showToast("Room created! Share the ID with your friend.", "success");
       break;
@@ -79,30 +81,27 @@ function handleWebSocketMessage(message) {
       myColor = message.payload.players.find(
         (p) => p.userId === currentUserId
       ).color;
+      
+      // Update UI
+      document.getElementById("room-info").classList.remove("hidden");
+      document.getElementById("current-room-id").textContent = currentRoomId;
       showToast("Joined room successfully!", "success");
 
       if (message.payload.readyToStart) {
-        // Start game automatically
-        setTimeout(() => {
-          sendWebSocketMessage({
-            type: "START_GAME",
-            payload: { roomId: currentRoomId },
-          });
-        }, 1000);
+        // Show start game button
+        document.getElementById("start-game-section").classList.remove("hidden");
+        document.getElementById("waiting-opponent").classList.add("hidden");
+        showToast("Room is ready! Click Start Game to begin.", "success");
       }
       break;
 
     case "OPPONENT_JOINED":
       showToast(`${message.payload.username} joined!`, "success");
       document.getElementById("waiting-opponent").classList.add("hidden");
-
-      // Start game
-      setTimeout(() => {
-        sendWebSocketMessage({
-          type: "START_GAME",
-          payload: { roomId: currentRoomId },
-        });
-      }, 1000);
+      
+      // Show start game button
+      document.getElementById("start-game-section").classList.remove("hidden");
+      showToast("Opponent joined! Click Start Game to begin.", "success");
       break;
 
     case "GAME_STARTED":

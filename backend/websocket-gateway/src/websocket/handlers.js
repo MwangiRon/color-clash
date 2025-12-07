@@ -24,6 +24,10 @@ class MessageHandler {
         await this.handleRegisterUser(ws, payload, clientInfo);
         break;
 
+      case "LOGIN_USER":
+        await this.handleLoginUser(ws, payload, clientInfo);
+        break;
+
       case "CREATE_ROOM":
         await this.handleCreateRoom(ws, payload, clientInfo);
         break;
@@ -100,6 +104,48 @@ class MessageHandler {
         JSON.stringify({
           type: "ERROR",
           payload: { error: "Failed to register user" },
+        })
+      );
+    }
+  }
+
+  // Login user
+  static async handleLoginUser(ws, payload, clientInfo) {
+    try {
+      const { username } = payload;
+
+      const result = await httpClient.loginUser(username);
+
+      if (result.success) {
+        // Update client info
+        clientInfo.userId = result.user.userId;
+        clientInfo.username = result.user.username;
+
+        logger.info(`User logged in: ${username} (${result.user.userId})`);
+
+        ws.send(
+          JSON.stringify({
+            type: "USER_REGISTERED",
+            payload: {
+              userId: result.user.userId,
+              username: result.user.username,
+            },
+          })
+        );
+      } else {
+        ws.send(
+          JSON.stringify({
+            type: "ERROR",
+            payload: { error: result.error || "Login failed" },
+          })
+        );
+      }
+    } catch (error) {
+      logger.error("Error in handleLoginUser:", error);
+      ws.send(
+        JSON.stringify({
+          type: "ERROR",
+          payload: { error: "Failed to login user" },
         })
       );
     }
