@@ -47,6 +47,13 @@ wss.on("connection", (ws, req) => {
 
   logger.info(`Client connected: ${clientId}`);
 
+  // Send connection acknowledgement
+  ws.send(JSON.stringify({
+    type: "CONNECTED",
+    payload: { clientId }
+  }));
+
+
   // Handle incoming messages
   ws.on("message", async (message) => {
     try {

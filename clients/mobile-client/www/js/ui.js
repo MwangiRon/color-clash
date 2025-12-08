@@ -41,3 +41,43 @@ function animateOnScroll() {
 document.addEventListener('DOMContentLoaded', () => {
     animateOnScroll();
 });
+
+// Game Renderer Utility
+window.GameRenderer = {
+    renderCell(cell, index, value, isInteractive = false) {
+        // Reset base classes
+        cell.className = "game-cell bg-gray-200 dark:bg-gray-700 rounded-lg cursor-pointer flex items-center justify-center text-4xl font-bold transition-all shadow-sm border-2 border-transparent h-24 relative overflow-hidden group";
+        
+        // Add hover effect if empty and interactive
+        if (value === null && isInteractive) {
+            cell.classList.add("hover:bg-gray-300", "dark:hover:bg-gray-600", "hover:border-gray-400", "dark:hover:border-gray-500", "active:scale-95");
+            // Add ghost piece on hover (optional advanced feature, skipping for simplicity)
+        }
+
+        // Render piece
+        cell.innerHTML = "";
+        
+        if (value) {
+            const piece = document.createElement("div");
+            // Removed scale-0 and separate animation frame for reliability
+            piece.className = "w-16 h-16 rounded-full shadow-inner transform transition-transform duration-300 animate-bounce-in";
+            
+            if (value === "red") {
+                piece.classList.add("bg-gradient-to-br", "from-red-400", "to-red-600", "shadow-red-900/50");
+                // Add inner gloss
+                const gloss = document.createElement("div");
+                gloss.className = "absolute top-2 left-3 w-4 h-2 bg-white/40 rounded-full transform -rotate-45";
+                piece.appendChild(gloss);
+            } else if (value === "blue") {
+                piece.classList.add("bg-gradient-to-br", "from-blue-400", "to-blue-600", "shadow-blue-900/50");
+                // Add inner gloss
+                const gloss = document.createElement("div");
+                gloss.className = "absolute top-2 left-3 w-4 h-2 bg-white/40 rounded-full transform -rotate-45";
+                piece.appendChild(gloss);
+            }
+            
+            cell.appendChild(piece);
+            cell.classList.add("occupied");
+        }
+    }
+};
